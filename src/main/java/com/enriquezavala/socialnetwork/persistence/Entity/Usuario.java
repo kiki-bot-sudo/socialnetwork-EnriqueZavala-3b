@@ -1,4 +1,4 @@
-package com.enriquezavala.socialnetwork.Entity;
+package com.enriquezavala.socialnetwork.persistence.Entity;
 
 import jakarta.persistence.*;
 
@@ -96,5 +96,29 @@ public class Usuario {
 
     public void setFotoPerfil(String fotoPerfil) {
         this.fotoPerfil = fotoPerfil;
+    }
+
+    public List<Fotografia> getFotografias() {
+        return fotografias;
+    }
+
+    public void setFotografias(List<Fotografia> fotografias) {
+        this.fotografias = fotografias;
+    }
+
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public List<LikeFotografia> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<LikeFotografia> likes) {
+        this.likes = likes;
     }
 }

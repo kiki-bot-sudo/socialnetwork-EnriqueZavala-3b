@@ -1,4 +1,4 @@
-package com.enriquezavala.socialnetwork.Entity;
+package com.enriquezavala.socialnetwork.persistence.Entity;
 
 import jakarta.persistence.*;
 
