@@ -2,9 +2,12 @@ package com.enriquezavala.socialnetwork.persistence.mapper;
 
 import com.enriquezavala.socialnetwork.domain.Photograph;
 import com.enriquezavala.socialnetwork.persistence.Entity.Fotografia;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring", uses = { UserMapper.class })
 public interface PhotographMapper {
@@ -16,4 +19,8 @@ public interface PhotographMapper {
            @Mapping(source = "usuario", target = "user"),
 })
    Photograph toPhotograph(Fotografia fotografia);
+   List<Photograph> toPhotographs(List<Fotografia> fotografias);
+
+   @InheritInverseConfiguration
+   Fotografia toFotografia(Photograph photograph);
 }
