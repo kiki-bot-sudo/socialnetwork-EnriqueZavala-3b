@@ -1,6 +1,6 @@
 package com.enriquezavala.socialnetwork.domain.repository;
 
-import com.enriquezavala.socialnetwork.domain.LikePhotography;
+import com.enriquezavala.socialnetwork.domain.model.LikePhotography;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

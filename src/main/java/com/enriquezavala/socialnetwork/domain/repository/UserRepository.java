@@ -1,7 +1,7 @@
 package com.enriquezavala.socialnetwork.domain.repository;
 
 
-import com.enriquezavala.socialnetwork.domain.User;
+import com.enriquezavala.socialnetwork.domain.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

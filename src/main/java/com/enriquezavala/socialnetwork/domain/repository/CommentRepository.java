@@ -1,6 +1,6 @@
 package com.enriquezavala.socialnetwork.domain.repository;
 
-import com.enriquezavala.socialnetwork.domain.Comment;
+import com.enriquezavala.socialnetwork.domain.model.Comment;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

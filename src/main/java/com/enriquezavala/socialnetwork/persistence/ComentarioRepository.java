@@ -1,6 +1,6 @@
 package com.enriquezavala.socialnetwork.persistence;
 
-import com.enriquezavala.socialnetwork.domain.Comment;
+import com.enriquezavala.socialnetwork.domain.model.Comment;
 import com.enriquezavala.socialnetwork.domain.repository.CommentRepository;
 import com.enriquezavala.socialnetwork.persistence.Entity.Comentario;
 import com.enriquezavala.socialnetwork.persistence.crud.ComentarioCrudRepository;

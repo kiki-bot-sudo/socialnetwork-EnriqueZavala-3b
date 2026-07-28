@@ -1,6 +1,6 @@
 package com.enriquezavala.socialnetwork.persistence;
 
-import com.enriquezavala.socialnetwork.domain.User;
+import com.enriquezavala.socialnetwork.domain.model.User;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import com.enriquezavala.socialnetwork.persistence.Entity.Usuario;
 import com.enriquezavala.socialnetwork.persistence.crud.UsuarioCrudRepository;

@@ -1,6 +1,6 @@
 package com.enriquezavala.socialnetwork.persistence;
 
-import com.enriquezavala.socialnetwork.domain.Photograph;
+import com.enriquezavala.socialnetwork.domain.model.Photograph;
 import com.enriquezavala.socialnetwork.domain.repository.PhotographRepository;
 import com.enriquezavala.socialnetwork.persistence.Entity.Fotografia;
 import com.enriquezavala.socialnetwork.persistence.crud.FotografiaCrudRepository;

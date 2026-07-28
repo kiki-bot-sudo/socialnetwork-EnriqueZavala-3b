@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ComentarioCrudRepository extends CrudRepository<Comentario, Long> {
     List<Comentario> findByFotografiaId(Long fotografiaId);
+
 }

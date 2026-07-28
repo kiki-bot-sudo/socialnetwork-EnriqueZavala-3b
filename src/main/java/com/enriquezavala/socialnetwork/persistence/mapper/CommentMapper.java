@@ -1,6 +1,6 @@
     package com.enriquezavala.socialnetwork.persistence.mapper;
 
-        import com.enriquezavala.socialnetwork.domain.Comment;
+        import com.enriquezavala.socialnetwork.domain.model.Comment;
         import com.enriquezavala.socialnetwork.persistence.Entity.Comentario;
         import org.mapstruct.InheritInverseConfiguration;
         import org.mapstruct.Mapper;

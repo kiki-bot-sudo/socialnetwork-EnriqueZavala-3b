@@ -1,6 +1,6 @@
 package com.enriquezavala.socialnetwork.persistence.mapper;
 
-import com.enriquezavala.socialnetwork.domain.Photograph;
+import com.enriquezavala.socialnetwork.domain.model.Photograph;
 import com.enriquezavala.socialnetwork.persistence.Entity.Fotografia;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

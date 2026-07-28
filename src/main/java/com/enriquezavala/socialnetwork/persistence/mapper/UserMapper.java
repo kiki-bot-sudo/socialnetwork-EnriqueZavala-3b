@@ -1,7 +1,7 @@
 package com.enriquezavala.socialnetwork.persistence.mapper;
 
 
-import com.enriquezavala.socialnetwork.domain.User;
+import com.enriquezavala.socialnetwork.domain.model.User;
 import com.enriquezavala.socialnetwork.persistence.Entity.Usuario;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

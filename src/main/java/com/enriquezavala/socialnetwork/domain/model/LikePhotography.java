@@ -1,4 +1,4 @@
-package com.enriquezavala.socialnetwork.domain;
+package com.enriquezavala.socialnetwork.domain.model;
 
 public class LikePhotography {
     private long id;
