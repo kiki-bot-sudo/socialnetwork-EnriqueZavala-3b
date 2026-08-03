@@ -12,6 +12,9 @@ public interface UserRepository {
 
     List<User> getAll();
     Optional<User> findById(Long id);
+    Optional<User> findByEmail(String email);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
     User save(User user);
     void deleteById(Long id);
 

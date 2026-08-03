@@ -3,6 +3,7 @@ package com.enriquezavala.socialnetwork.domain.service;
 import com.enriquezavala.socialnetwork.domain.model.User;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +12,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAll() {
@@ -31,6 +34,16 @@ public class UserService {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new IllegalArgumentException("El email no puede estar vacío");
         }
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalStateException("El username ya está registrado");
+        }
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalStateException("El email ya está registrado");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

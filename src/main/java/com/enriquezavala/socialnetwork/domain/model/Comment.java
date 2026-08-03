@@ -1,16 +1,16 @@
 package com.enriquezavala.socialnetwork.domain.model;
 
 public class Comment {
-    private long id;
+    private Long id;
     private String content;
     private User user;
     private Photograph photograph;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

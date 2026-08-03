@@ -1,11 +1,14 @@
 package com.enriquezavala.socialnetwork.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class User {
-    private long id;
+    private Long id;
     private String username;
     private String email;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String name;
     private String biography;
@@ -14,11 +17,11 @@ public class User {
     private List<Photograph> photographs;
     private List<LikePhotography> likes;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

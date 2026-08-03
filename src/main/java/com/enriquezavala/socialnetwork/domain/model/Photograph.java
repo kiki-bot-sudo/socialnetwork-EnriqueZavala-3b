@@ -3,7 +3,7 @@ package com.enriquezavala.socialnetwork.domain.model;
 import java.util.List;
 
 public class Photograph {
-    private long id;
+    private Long id;
     private String title;
     private String description;
     private String imageUrl;
@@ -19,11 +19,12 @@ public class Photograph {
         this.imageUrl = imageUrl;
     }
 
-    public long getId() {
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

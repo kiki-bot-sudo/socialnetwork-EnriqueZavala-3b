@@ -34,6 +34,22 @@ public class UsuarioRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        return usuarioCrudRepository.findByEmail(email)
+                .map(userMapper::toUser);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return usuarioCrudRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return usuarioCrudRepository.existsByEmail(email);
+    }
+
+    @Override
     public User save(User user) {
         Usuario usuario = userMapper.toUsuario(user);
         Usuario guardado = usuarioCrudRepository.save(usuario);

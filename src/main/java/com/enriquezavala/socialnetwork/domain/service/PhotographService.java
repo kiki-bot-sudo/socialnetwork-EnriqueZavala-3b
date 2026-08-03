@@ -1,7 +1,9 @@
 package com.enriquezavala.socialnetwork.domain.service;
 
+import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.model.Photograph;
 import com.enriquezavala.socialnetwork.domain.repository.PhotographRepository;
+import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +13,11 @@ import java.util.Optional;
 public class PhotographService {
 
     private final PhotographRepository photographRepository;
+    private final UserRepository userRepository;
 
-    public PhotographService(PhotographRepository photographRepository) {
+    public PhotographService(PhotographRepository photographRepository, UserRepository userRepository) {
         this.photographRepository = photographRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Photograph> getAll() {
@@ -37,6 +41,13 @@ public class PhotographService {
         }
         if (photograph.getUser() == null) {
             throw new IllegalArgumentException("La foto necesita un usuario dueño");
+        }
+        if (photograph.getUser().getId() == null) {
+            throw new IllegalArgumentException("El usuario dueño necesita un ID");
+        }
+        if (userRepository.findById(photograph.getUser().getId()).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "El usuario con ID " + photograph.getUser().getId() + " no existe");
         }
         return photographRepository.save(photograph);
     }
