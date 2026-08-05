@@ -24,7 +24,7 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        if (request.email() == null || request.email().isBlank()
+        if (request == null || request.email() == null || request.email().isBlank()
                 || request.password() == null || request.password().isBlank()) {
             throw new InvalidCredentialsException("Correo o contraseña incorrectos");
         }

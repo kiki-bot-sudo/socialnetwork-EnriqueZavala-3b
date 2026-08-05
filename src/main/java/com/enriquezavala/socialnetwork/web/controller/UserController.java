@@ -1,6 +1,7 @@
 package com.enriquezavala.socialnetwork.web.controller;
 
 import com.enriquezavala.socialnetwork.domain.model.User;
+import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Users", description = "User management for the social network")
-@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,6 +30,7 @@ public class UserController {
     }
 
     @Operation(summary = "List all users", description = "Returns every user registered in the system")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponse(responseCode = "200", description = "List retrieved successfully")
     @GetMapping
     public ResponseEntity<List<User>> getAll() {
@@ -37,6 +38,7 @@ public class UserController {
     }
 
     @Operation(summary = "Get a user by ID")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
@@ -44,9 +46,10 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getById(
             @Parameter(description = "User ID", example = "1") @PathVariable Long id) {
-        return userService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User user = userService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "El usuario con ID " + id + " no existe"));
+        return ResponseEntity.ok(user);
     }
 
     @Operation(
@@ -84,6 +87,7 @@ public class UserController {
     }
 
     @Operation(summary = "Delete a user by ID")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponse(responseCode = "204", description = "User deleted successfully")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(

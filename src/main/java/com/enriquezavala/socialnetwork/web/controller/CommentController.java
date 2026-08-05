@@ -1,6 +1,7 @@
 package com.enriquezavala.socialnetwork.web.controller;
 
 import com.enriquezavala.socialnetwork.domain.model.Comment;
+import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,9 +45,10 @@ public class CommentController {
     @GetMapping("/{id}")
     public ResponseEntity<Comment> getById(
             @Parameter(description = "Comment ID", example = "1") @PathVariable Long id) {
-        return commentService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Comment comment = commentService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "El comentario con ID " + id + " no existe"));
+        return ResponseEntity.ok(comment);
     }
 
     @Operation(summary = "List comments on a photograph")

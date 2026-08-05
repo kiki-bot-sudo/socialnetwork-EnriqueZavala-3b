@@ -1,6 +1,7 @@
 package com.enriquezavala.socialnetwork.domain.service;
 
 import com.enriquezavala.socialnetwork.domain.model.User;
+import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,9 @@ public class UserService {
     }
 
     public User save(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Los datos del usuario son obligatorios");
+        }
         if (user.getUsername() == null || user.getUsername().isBlank()) {
             throw new IllegalArgumentException("El username no puede estar vacío");
         }
@@ -48,6 +52,10 @@ public class UserService {
     }
 
     public void deleteById(Long id) {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "El usuario con ID " + id + " no existe");
+        }
         userRepository.deleteById(id);
     }
 }

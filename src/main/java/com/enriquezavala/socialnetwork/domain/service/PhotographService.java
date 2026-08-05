@@ -29,10 +29,17 @@ public class PhotographService {
     }
 
     public List<Photograph> findByUserId(Long userId) {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "El usuario con ID " + userId + " no existe");
+        }
         return photographRepository.findByUserId(userId);
     }
 
     public Photograph save(Photograph photograph) {
+        if (photograph == null) {
+            throw new IllegalArgumentException("Los datos de la fotografía son obligatorios");
+        }
         if (photograph.getTitle() == null || photograph.getTitle().isBlank()) {
             throw new IllegalArgumentException("El título no puede estar vacío");
         }
@@ -53,6 +60,10 @@ public class PhotographService {
     }
 
     public void deleteById(Long id) {
+        if (photographRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "La fotografía con ID " + id + " no existe");
+        }
         photographRepository.deleteById(id);
     }
 }

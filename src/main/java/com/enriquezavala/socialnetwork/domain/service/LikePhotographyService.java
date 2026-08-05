@@ -29,14 +29,19 @@ public class LikePhotographyService {
     }
 
     public List<LikePhotography> findByPhotographId(Long photographId) {
+        validatePhotographExists(photographId);
         return likePhotographyRepository.findByPhotographId(photographId);
     }
 
     public long countByPhotographId(Long photographId) {
+        validatePhotographExists(photographId);
         return likePhotographyRepository.countByPhotographId(photographId);
     }
 
     public LikePhotography save(LikePhotography like) {
+        if (like == null) {
+            throw new IllegalArgumentException("Los datos del like son obligatorios");
+        }
         if (like.getUser() == null || like.getUser().getId() == null) {
             throw new IllegalArgumentException("El like necesita un usuario con ID");
         }
@@ -61,6 +66,16 @@ public class LikePhotographyService {
     }
 
     public void deleteById(Long id) {
+        if (likePhotographyRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("El like con ID " + id + " no existe");
+        }
         likePhotographyRepository.deleteById(id);
+    }
+
+    private void validatePhotographExists(Long photographId) {
+        if (photographRepository.findById(photographId).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "La fotografía con ID " + photographId + " no existe");
+        }
     }
 }

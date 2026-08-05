@@ -8,6 +8,7 @@ import com.enriquezavala.socialnetwork.persistence.mapper.LikePhotographyMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LikeFotografiaRepository implements LikePhotographyRepository {
@@ -24,6 +25,12 @@ public class LikeFotografiaRepository implements LikePhotographyRepository {
     public List<LikePhotography> getAll() {
         List<LikeFotografia> likes = (List<LikeFotografia>) likeFotografiaCrudRepository.findAll();
         return likePhotographyMapper.toLikePhotographies(likes);
+    }
+
+    @Override
+    public Optional<LikePhotography> findById(Long id) {
+        return likeFotografiaCrudRepository.findById(id)
+                .map(likePhotographyMapper::toLikePhotography);
     }
 
     @Override

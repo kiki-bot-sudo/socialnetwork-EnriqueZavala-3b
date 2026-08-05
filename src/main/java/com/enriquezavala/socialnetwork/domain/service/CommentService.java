@@ -33,10 +33,17 @@ public class CommentService {
     }
 
     public List<Comment> findByPhotographId(Long photographId) {
+        if (photographRepository.findById(photographId).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "La fotografía con ID " + photographId + " no existe");
+        }
         return commentRepository.findByPhotographId(photographId);
     }
 
     public Comment save(Comment comment) {
+        if (comment == null) {
+            throw new IllegalArgumentException("Los datos del comentario son obligatorios");
+        }
         if (comment.getContent() == null || comment.getContent().isBlank()) {
             throw new IllegalArgumentException("El comentario no puede estar vacío");
         }
@@ -64,6 +71,10 @@ public class CommentService {
     }
 
     public void deleteById(Long id) {
+        if (commentRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "El comentario con ID " + id + " no existe");
+        }
         commentRepository.deleteById(id);
     }
 }

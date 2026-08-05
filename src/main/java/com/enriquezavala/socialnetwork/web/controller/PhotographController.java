@@ -1,6 +1,7 @@
 package com.enriquezavala.socialnetwork.web.controller;
 
 import com.enriquezavala.socialnetwork.domain.model.Photograph;
+import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.service.PhotographService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,9 +45,10 @@ public class PhotographController {
     @GetMapping("/{id}")
     public ResponseEntity<Photograph> getById(
             @Parameter(description = "Photograph ID", example = "1") @PathVariable Long id) {
-        return photographService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Photograph photograph = photographService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "La fotografía con ID " + id + " no existe"));
+        return ResponseEntity.ok(photograph);
     }
 
     @Operation(summary = "List photographs from a user", description = "Returns every photograph posted by a specific user")
