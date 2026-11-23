@@ -13,9 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -36,6 +39,32 @@ public class PhotographController {
     @GetMapping
     public ResponseEntity<List<Photograph>> getAll() {
         return ResponseEntity.ok(photographService.getAll());
+    }
+
+    @Operation(
+            summary = "Post a new photograph uploading the image file",
+            description = "multipart/form-data with the image file (JPG, PNG, WEBP or GIF, max 10 MB), "
+                    + "title, category and an optional description. The image is stored on the server "
+                    + "and served at /uploads/…"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Photograph created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data or file is not an allowed image", content = @Content),
+            @ApiResponse(responseCode = "413", description = "Image larger than 10 MB", content = @Content)
+    })
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Photograph> upload(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam(value = "description", required = false) String description,
+            @Parameter(hidden = true) Principal principal) throws IOException {
+        Photograph photograph = new Photograph();
+        photograph.setTitle(title);
+        photograph.setCategory(category);
+        photograph.setDescription(description);
+        Photograph saved = photographService.saveWithImage(photograph, file.getBytes(), principal.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @Operation(summary = "List the allowed photograph categories")

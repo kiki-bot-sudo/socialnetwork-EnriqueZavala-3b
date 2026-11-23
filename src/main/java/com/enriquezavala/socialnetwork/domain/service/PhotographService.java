@@ -4,6 +4,7 @@ import com.enriquezavala.socialnetwork.domain.exception.ForbiddenOperationExcept
 import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.model.Photograph;
 import com.enriquezavala.socialnetwork.domain.model.User;
+import com.enriquezavala.socialnetwork.domain.repository.ImageStorage;
 import com.enriquezavala.socialnetwork.domain.repository.PhotographRepository;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,40 @@ public class PhotographService {
 
     private final PhotographRepository photographRepository;
     private final UserRepository userRepository;
+    private final ImageStorage imageStorage;
 
-    public PhotographService(PhotographRepository photographRepository, UserRepository userRepository) {
+    public PhotographService(PhotographRepository photographRepository, UserRepository userRepository,
+                             ImageStorage imageStorage) {
         this.photographRepository = photographRepository;
         this.userRepository = userRepository;
+        this.imageStorage = imageStorage;
+    }
+
+    /**
+     * Publica una foto subiendo el archivo de imagen (en lugar de una URL).
+     * Primero valida los datos, luego guarda la imagen; si algo falla después,
+     * la imagen guardada se borra para no dejar archivos huérfanos.
+     */
+    public Photograph saveWithImage(Photograph photograph, byte[] image, String requesterEmail) {
+        if (photograph == null) {
+            throw new IllegalArgumentException("Los datos de la fotografía son obligatorios");
+        }
+        if (photograph.getTitle() == null || photograph.getTitle().isBlank()) {
+            throw new IllegalArgumentException("El título no puede estar vacío");
+        }
+        if (normalizeCategory(photograph.getCategory()) == null) {
+            throw new IllegalArgumentException(
+                    "La categoría es obligatoria. Opciones: " + String.join(", ", CATEGORIES));
+        }
+
+        String path = imageStorage.store(image);
+        photograph.setImageUrl(path);
+        try {
+            return save(photograph, requesterEmail);
+        } catch (RuntimeException ex) {
+            imageStorage.deleteIfStored(path);
+            throw ex;
+        }
     }
 
     /** Categorías permitidas para las fotografías. */
@@ -103,5 +134,7 @@ public class PhotographService {
             throw new ForbiddenOperationException("Solo el dueño puede borrar esta fotografía");
         }
         photographRepository.deleteById(id);
+        // Si la imagen fue subida a este servidor, también se borra el archivo.
+        imageStorage.deleteIfStored(photograph.getImageUrl());
     }
 }

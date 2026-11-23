@@ -3,6 +3,7 @@ package com.enriquezavala.socialnetwork.domain.service;
 import com.enriquezavala.socialnetwork.domain.exception.ForbiddenOperationException;
 import com.enriquezavala.socialnetwork.domain.model.Photograph;
 import com.enriquezavala.socialnetwork.domain.model.User;
+import com.enriquezavala.socialnetwork.domain.repository.ImageStorage;
 import com.enriquezavala.socialnetwork.domain.repository.PhotographRepository;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class OwnershipTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final PhotographRepository photographRepository = mock(PhotographRepository.class);
     private final PhotographService photographService =
-            new PhotographService(photographRepository, userRepository);
+            new PhotographService(photographRepository, userRepository, mock(ImageStorage.class));
 
     private static User user(long id, String email) {
         User user = new User();
