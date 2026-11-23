@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Tag(name = "Likes", description = "Management of likes on photographs")
@@ -63,9 +64,6 @@ public class LikePhotographyController {
                                     name = "Sample like",
                                     value = """
                                             {
-                                              "user": {
-                                                "id": 2
-                                              },
                                               "photograph": {
                                                 "id": 1
                                               }
@@ -80,8 +78,9 @@ public class LikePhotographyController {
             @ApiResponse(responseCode = "409", description = "The user already liked this photograph", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<LikePhotography> save(@RequestBody LikePhotography like) {
-        LikePhotography saved = likePhotographyService.save(like);
+    public ResponseEntity<LikePhotography> save(@RequestBody LikePhotography like,
+                                                @Parameter(hidden = true) Principal principal) {
+        LikePhotography saved = likePhotographyService.save(like, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -89,8 +88,9 @@ public class LikePhotographyController {
     @ApiResponse(responseCode = "204", description = "Like deleted successfully")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            @Parameter(description = "ID of the like to delete", example = "1") @PathVariable Long id) {
-        likePhotographyService.deleteById(id);
+            @Parameter(description = "ID of the like to delete", example = "1") @PathVariable Long id,
+            @Parameter(hidden = true) Principal principal) {
+        likePhotographyService.deleteById(id, principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Tag(name = "Users", description = "User management for the social network")
@@ -91,8 +92,9 @@ public class UserController {
     @ApiResponse(responseCode = "204", description = "User deleted successfully")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            @Parameter(description = "ID of the user to delete", example = "1") @PathVariable Long id) {
-        userService.deleteById(id);
+            @Parameter(description = "ID of the user to delete", example = "1") @PathVariable Long id,
+            @Parameter(hidden = true) Principal principal) {
+        userService.deleteById(id, principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

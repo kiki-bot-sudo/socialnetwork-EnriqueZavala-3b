@@ -7,6 +7,7 @@ public class Photograph {
     private String title;
     private String description;
     private String imageUrl;
+    private String category;
     private User user;
     private List<Comment> comments;
     private List<LikePhotography> Likes;
@@ -17,6 +18,14 @@ public class Photograph {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 

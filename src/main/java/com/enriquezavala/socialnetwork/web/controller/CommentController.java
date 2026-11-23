@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Tag(name = "Comments", description = "Management of comments on photographs")
@@ -71,9 +72,6 @@ public class CommentController {
                                     value = """
                                             {
                                               "content": "Great shot, looks amazing!",
-                                              "user": {
-                                                "id": 2
-                                              },
                                               "photograph": {
                                                 "id": 1
                                               }
@@ -88,8 +86,9 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "Invalid data (blank content, missing user or photograph)", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<Comment> save(@RequestBody Comment comment) {
-        Comment saved = commentService.save(comment);
+    public ResponseEntity<Comment> save(@RequestBody Comment comment,
+                                        @Parameter(hidden = true) Principal principal) {
+        Comment saved = commentService.save(comment, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -97,8 +96,9 @@ public class CommentController {
     @ApiResponse(responseCode = "204", description = "Comment deleted successfully")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            @Parameter(description = "ID of the comment to delete", example = "1") @PathVariable Long id) {
-        commentService.deleteById(id);
+            @Parameter(description = "ID of the comment to delete", example = "1") @PathVariable Long id,
+            @Parameter(hidden = true) Principal principal) {
+        commentService.deleteById(id, principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

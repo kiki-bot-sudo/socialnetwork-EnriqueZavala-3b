@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Tag(name = "Photographs", description = "Management of photographs posted by users")
@@ -35,6 +36,13 @@ public class PhotographController {
     @GetMapping
     public ResponseEntity<List<Photograph>> getAll() {
         return ResponseEntity.ok(photographService.getAll());
+    }
+
+    @Operation(summary = "List the allowed photograph categories")
+    @ApiResponse(responseCode = "200", description = "List retrieved successfully")
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getCategories() {
+        return ResponseEntity.ok(photographService.getCategories());
     }
 
     @Operation(summary = "Get a photograph by ID")
@@ -73,9 +81,7 @@ public class PhotographController {
                                               "title": "Sunset at the beach",
                                               "description": "Photo taken in Puerto Vallarta",
                                               "imageUrl": "https://example.com/img/sunset.jpg",
-                                              "user": {
-                                                "id": 1
-                                              }
+                                              "category": "Atardecer"
                                             }
                                             """
                             )
@@ -87,8 +93,9 @@ public class PhotographController {
             @ApiResponse(responseCode = "400", description = "Invalid data (blank title/URL or missing user)", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<Photograph> save(@RequestBody Photograph photograph) {
-        Photograph saved = photographService.save(photograph);
+    public ResponseEntity<Photograph> save(@RequestBody Photograph photograph,
+                                           @Parameter(hidden = true) Principal principal) {
+        Photograph saved = photographService.save(photograph, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -96,8 +103,9 @@ public class PhotographController {
     @ApiResponse(responseCode = "204", description = "Photograph deleted successfully")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            @Parameter(description = "ID of the photograph to delete", example = "1") @PathVariable Long id) {
-        photographService.deleteById(id);
+            @Parameter(description = "ID of the photograph to delete", example = "1") @PathVariable Long id,
+            @Parameter(hidden = true) Principal principal) {
+        photographService.deleteById(id, principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

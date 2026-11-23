@@ -1,7 +1,9 @@
 package com.enriquezavala.socialnetwork.domain.service;
 
+import com.enriquezavala.socialnetwork.domain.exception.ForbiddenOperationException;
 import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.model.Photograph;
+import com.enriquezavala.socialnetwork.domain.model.User;
 import com.enriquezavala.socialnetwork.domain.repository.PhotographRepository;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,25 @@ public class PhotographService {
         this.userRepository = userRepository;
     }
 
+    /** Categorías permitidas para las fotografías. */
+    public static final List<String> CATEGORIES = List.of(
+            "Paisaje", "Retrato", "Urbano", "Naturaleza",
+            "Animales", "Arquitectura", "Comida", "Atardecer"
+    );
+
+    public List<String> getCategories() {
+        return CATEGORIES;
+    }
+
+    /** Devuelve la categoría con su escritura oficial, o null si no es válida. */
+    private static String normalizeCategory(String category) {
+        if (category == null) return null;
+        return CATEGORIES.stream()
+                .filter(c -> c.equalsIgnoreCase(category.trim()))
+                .findFirst()
+                .orElse(null);
+    }
+
     public List<Photograph> getAll() {
         return photographRepository.getAll();
     }
@@ -36,7 +57,11 @@ public class PhotographService {
         return photographRepository.findByUserId(userId);
     }
 
-    public Photograph save(Photograph photograph) {
+    /**
+     * Publica una foto a nombre del usuario autenticado. El dueño se toma del token,
+     * nunca del cuerpo de la petición.
+     */
+    public Photograph save(Photograph photograph, String requesterEmail) {
         if (photograph == null) {
             throw new IllegalArgumentException("Los datos de la fotografía son obligatorios");
         }
@@ -46,23 +71,36 @@ public class PhotographService {
         if (photograph.getImageUrl() == null || photograph.getImageUrl().isBlank()) {
             throw new IllegalArgumentException("La foto necesita una URL de imagen");
         }
-        if (photograph.getUser() == null) {
-            throw new IllegalArgumentException("La foto necesita un usuario dueño");
+        String category = normalizeCategory(photograph.getCategory());
+        if (category == null) {
+            throw new IllegalArgumentException(
+                    "La categoría es obligatoria. Opciones: " + String.join(", ", CATEGORIES));
         }
-        if (photograph.getUser().getId() == null) {
-            throw new IllegalArgumentException("El usuario dueño necesita un ID");
-        }
-        if (userRepository.findById(photograph.getUser().getId()).isEmpty()) {
-            throw new ResourceNotFoundException(
-                    "El usuario con ID " + photograph.getUser().getId() + " no existe");
-        }
+        photograph.setCategory(category);
+        User owner = userRepository.findByEmail(requesterEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario autenticado no existe"));
+
+        User ownerRef = new User();
+        ownerRef.setId(owner.getId());
+
+        // Un POST siempre crea: se ignora cualquier ID enviado para no sobrescribir otra foto.
+        photograph.setId(null);
+        photograph.setUser(ownerRef);
+        photograph.setComments(null);
+        photograph.setLikes(null);
         return photographRepository.save(photograph);
     }
 
-    public void deleteById(Long id) {
-        if (photographRepository.findById(id).isEmpty()) {
-            throw new ResourceNotFoundException(
-                    "La fotografía con ID " + id + " no existe");
+    public void deleteById(Long id, String requesterEmail) {
+        Photograph photograph = photographRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "La fotografía con ID " + id + " no existe"));
+        User requester = userRepository.findByEmail(requesterEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario autenticado no existe"));
+
+        if (photograph.getUser() == null
+                || !requester.getId().equals(photograph.getUser().getId())) {
+            throw new ForbiddenOperationException("Solo el dueño puede borrar esta fotografía");
         }
         photographRepository.deleteById(id);
     }

@@ -4,7 +4,7 @@ Backend de una red social orientada a fotografía: usuarios que publican fotos, 
 
 ## Stack
 
-`Java 26` · `Spring Boot 4` · `Spring Security` · `Spring Data JPA` · `PostgreSQL` · `JWT (jjwt)` · `MapStruct` · `springdoc-openapi (Swagger)` · `JUnit`
+`Java 27` · `Gradle 9.9` · `Spring Boot 4` · `Spring Security` · `Spring Data JPA` · `PostgreSQL` · `JWT (jjwt)` · `MapStruct` · `springdoc-openapi (Swagger)` · `JUnit`
 
 ## Arquitectura
 
@@ -24,13 +24,17 @@ Los `Mapper` (`UserMapper`, `PhotographMapper`, `CommentMapper`, `LikePhotograph
 ## Funcionalidad
 
 - **Usuarios**: registro y autenticación.
-- **Fotografías**: publicación de fotos por usuario.
+- **Fotografías**: publicación de fotos por usuario, cada una con una **categoría** (Paisaje, Retrato, Urbano, Naturaleza, Animales, Arquitectura, Comida, Atardecer). `GET /api/photographs/categories` devuelve la lista válida.
 - **Comentarios**: comentarios sobre fotografías.
 - **Likes**: sistema de likes sobre fotografías.
 
 ## Seguridad
 
 Autenticación stateless con **JWT**: `JwtUtil` genera y valida tokens, `JwtFilter` los intercepta en cada request, y `SecurityConfig` define qué rutas requieren autenticación. El secreto y el tiempo de expiración del token se configuran por variables de entorno (`JWT_SECRET`, `JWT_EXPIRATION_MS`), no quedan hardcodeados en el código.
+
+**Login con Firebase** (`POST /auth/firebase`): la app Flutter inicia sesión con Firebase Authentication y envía su *ID token*. `FirebaseTokenVerifier` comprueba la firma con las llaves públicas de Google, el emisor y la audiencia (`app.firebase.project-id`) y entrega un JWT del backend; si el correo no tiene cuenta, la crea. La contraseña solo la conoce Firebase, así que la recuperación de contraseña de Firebase no desincroniza las cuentas.
+
+**CORS**: solo se permiten orígenes locales (`http://localhost:*`, `http://127.0.0.1:*`) para la app Flutter web; se puede cambiar con `app.cors.allowed-origins`.
 
 ## Manejo de errores
 
@@ -47,9 +51,21 @@ Incluye pruebas unitarias para el servicio de autenticación y la utilidad de JW
 ## Cómo correrlo localmente
 
 ```bash
-# Requiere PostgreSQL corriendo y las variables de entorno configuradas
+# Requiere JDK 27, PostgreSQL corriendo y las variables de entorno configuradas.
+# Copia src/main/resources/application-dev.properties.example como
+# application-dev.properties y pon tus datos de PostgreSQL.
 export JWT_SECRET=tu-secreto-de-al-menos-32-caracteres
 ./gradlew bootRun
 ```
+
+### Datos de prueba
+
+Con el backend corriendo, en otra terminal de PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\seed-data.ps1
+```
+
+Crea 3 usuarios, 5 fotos, comentarios y likes usando la API (las contraseñas quedan cifradas con BCrypt). Se puede ejecutar varias veces sin duplicar usuarios ni likes.
 
 Perfiles disponibles: `dev` (por defecto) y `pdn`, configurables en `application-*.properties`.

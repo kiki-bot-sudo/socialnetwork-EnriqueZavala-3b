@@ -44,3 +44,6 @@ bin/
 
 
 application-dev.properties
+### Configuración local ###
+.idea/
+src/main/resources/application-dev.properties

@@ -22,6 +22,11 @@ public class Fotografia {
     @Column(name = "url_imagen", nullable = false)
     private String urlImagen;
 
+    // Nullable en la base para que ddl-auto=update pueda agregar la columna a
+    // tablas con datos; el servicio la exige al crear fotos nuevas.
+    @Column(length = 30)
+    private String categoria;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
@@ -67,6 +72,14 @@ public class Fotografia {
 
     public void setUrlImagen(String urlImagen) {
         this.urlImagen = urlImagen;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     public Usuario getUsuario() {

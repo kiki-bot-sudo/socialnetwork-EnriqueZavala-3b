@@ -16,6 +16,7 @@ public interface PhotographMapper {
            @Mapping(source = "titulo", target = "title"),
            @Mapping(source = "descripcion", target = "description"),
            @Mapping(source = "urlImagen", target = "imageUrl"),
+           @Mapping(source = "categoria", target = "category"),
            @Mapping(source = "usuario", target = "user"),
 })
    Photograph toPhotograph(Fotografia fotografia);

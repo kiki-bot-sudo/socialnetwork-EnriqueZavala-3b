@@ -1,5 +1,6 @@
 package com.enriquezavala.socialnetwork.web.exception;
 
+import com.enriquezavala.socialnetwork.domain.exception.ForbiddenOperationException;
 import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.exception.InvalidCredentialsException;
 import org.slf4j.Logger;
@@ -35,6 +36,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidCredentials(InvalidCredentialsException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<Map<String, Object>> handleForbidden(ForbiddenOperationException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

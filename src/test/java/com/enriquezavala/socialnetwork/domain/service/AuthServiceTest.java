@@ -3,6 +3,7 @@ package com.enriquezavala.socialnetwork.domain.service;
 import com.enriquezavala.socialnetwork.domain.exception.InvalidCredentialsException;
 import com.enriquezavala.socialnetwork.domain.model.User;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
+import com.enriquezavala.socialnetwork.security.FirebaseTokenVerifier;
 import com.enriquezavala.socialnetwork.security.JwtUtil;
 import com.enriquezavala.socialnetwork.web.dto.AuthResponse;
 import com.enriquezavala.socialnetwork.web.dto.LoginRequest;
@@ -24,7 +25,7 @@ class AuthServiceTest {
     private final JwtUtil jwtUtil = new JwtUtil(
             "test-secret-key-with-at-least-32-characters", 60_000);
     private final AuthService authService =
-            new AuthService(userRepository, passwordEncoder, jwtUtil);
+            new AuthService(userRepository, passwordEncoder, jwtUtil, mock(FirebaseTokenVerifier.class));
 
     @Test
     void returnsTokenForValidCredentials() {

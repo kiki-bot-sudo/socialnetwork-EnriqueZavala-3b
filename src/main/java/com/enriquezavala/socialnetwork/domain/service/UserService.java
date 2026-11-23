@@ -1,6 +1,7 @@
 package com.enriquezavala.socialnetwork.domain.service;
 
 import com.enriquezavala.socialnetwork.domain.model.User;
+import com.enriquezavala.socialnetwork.domain.exception.ForbiddenOperationException;
 import com.enriquezavala.socialnetwork.domain.exception.ResourceNotFoundException;
 import com.enriquezavala.socialnetwork.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -47,14 +48,28 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalStateException("El email ya está registrado");
         }
+        // El registro siempre crea: se ignora cualquier ID enviado para no sobrescribir
+        // a otro usuario, y no se aceptan listas anidadas desde el cliente.
+        user.setId(null);
+        user.setPhotographs(null);
+        user.setComments(null);
+        user.setLikes(null);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    public void deleteById(Long id) {
+    /**
+     * Un usuario solo puede borrar su propia cuenta.
+     */
+    public void deleteById(Long id, String requesterEmail) {
         if (userRepository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException(
                     "El usuario con ID " + id + " no existe");
+        }
+        User requester = userRepository.findByEmail(requesterEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario autenticado no existe"));
+        if (!requester.getId().equals(id)) {
+            throw new ForbiddenOperationException("Solo puedes borrar tu propia cuenta");
         }
         userRepository.deleteById(id);
     }

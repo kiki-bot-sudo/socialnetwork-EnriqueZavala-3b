@@ -1,0 +1,10 @@
+# PLANTILLA: copia este archivo como application-dev.properties y rellena tus datos.
+# application-dev.properties está en .gitignore para no subir credenciales.
+server.port=8090
+spring.datasource.url=jdbc:postgresql://localhost:5432/socialnetwork
+spring.datasource.username=postgres
+spring.datasource.password=TU_PASSWORD
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# Crea/actualiza las tablas automáticamente a partir de las entidades JPA
+spring.jpa.hibernate.ddl-auto=update
